@@ -20,7 +20,6 @@ Status: 200 OK
 Connection: close
 Content-Type: application/json
 ```
-___
 
 
 ## Add Listing

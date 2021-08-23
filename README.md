@@ -6,6 +6,7 @@ ____
 ## Add Bot
 ### Request
 ``` POST /add.bot ```
+
 ```userId``` - user uniq id
 
 ```params``` - key/value list settings bot

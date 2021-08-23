@@ -1,6 +1,5 @@
 # Listing Bot Rest Api
-Cryptocurrency exchange trading bot
-____
+>Cryptocurrency exchange trading bot
 
 
 ## Add Bot

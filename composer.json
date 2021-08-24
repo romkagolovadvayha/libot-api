@@ -1,5 +1,8 @@
 {
   "autoload": {
     "psr-4": {"Libot\\": "classes/Libot"}
+  },
+  "require": {
+    "ext-curl": "*"
   }
 }

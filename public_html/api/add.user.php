@@ -9,14 +9,14 @@ $userUseCase = new \Libot\Models\User($tradeBotRepository);
 
 $json = file_get_contents('php://input');
 if (empty($json)) {
-    echo json_encode(['status' => 403]);
+    echo json_encode(['status' => 403, 'error' => 'Ошибка доступа!']);
     exit;
 }
 $data = json_decode($json, 1);
 
 try {
     $token = \Libot\User\Token::execute();
-    $userUseCase->addUser($data['login'], $data['password'], $data['fullname'], $token);
+    $userUseCase->addUser($data['login'], $data['password'], $data['fullname'], $data['email'], $data['recaptcha'], $token);
     $user = $userUseCase->getUser($data['login']);
 } catch (\ErrorException $ex) {
     echo json_encode(['status' => $ex->getCode(), 'error' => $ex->getMessage()]);

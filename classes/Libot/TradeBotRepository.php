@@ -14,29 +14,15 @@ class TradeBotRepository
         $this->PDO = $PDO;
     }
 
-    public function addUser($login, $password, $fullname, $token)
+    public function addUser($login, $password, $fullname, $email, $token)
     {
-        $params = [
-            ':login' => $login,
-        ];
-
-        $stmt = $this->PDO->prepare(
-            'SELECT * FROM users WHERE login=:login'
-        );
-        $stmt->setFetchMode(\PDO::FETCH_ASSOC);
-        $stmt->execute($params);
-        $response = $stmt->fetch();
-
-        if ($response) {
-            throw new \ErrorException('Логин уже используется!', 450);
-        }
         $stmt   = $this->PDO->prepare(
-            'INSERT users SET login=:login, password=:password, fullname=:fullname, token=:token, userAgent=:userAgent, ip=:ip'
+            'INSERT users SET login=:login, password=:password, fullname=:fullname, token=:token, userAgent=:userAgent, ip=:ip, email=:email'
         );
         $userAgent = $_SERVER['HTTP_USER_AGENT'];
         $ip = $_SERVER['REMOTE_ADDR'];
         $params = [
-            ':login' => $login, ':password' => md5($password), ':fullname' => $fullname, ':token' => $token, ':userAgent' => $userAgent, ':ip' => $ip
+            ':login' => $login, ':password' => md5($password), ':fullname' => $fullname, ':email' => $email, ':token' => $token, ':userAgent' => $userAgent, ':ip' => $ip
         ];
         $result = $stmt->execute($params);
 
@@ -61,7 +47,7 @@ class TradeBotRepository
             exit;
         }
 
-        return !empty($objects) ? $objects[0] : null;
+        return !empty($objects) ? get_object_vars($objects[0]) : null;
     }
 
     public function getUserByToken($token)
@@ -82,7 +68,7 @@ class TradeBotRepository
             exit;
         }
 
-        return !empty($objects) ? $objects[0] : null;
+        return !empty($objects) ? get_object_vars($objects[0]) : null;
     }
 
     public function updateUser($login, $password = null, $fullname = null)

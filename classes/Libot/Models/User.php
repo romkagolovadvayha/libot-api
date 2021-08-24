@@ -14,7 +14,7 @@ class User
         $this->repository = $repository;
     }
 
-    public function addUser($login, $password, $fullname, $token)
+    public function addUser($login, $password, $fullname, $email, $recaptcha, $token)
     {
         if (empty($login)) {
             throw new \ErrorException('Введите логин!', 450);
@@ -25,7 +25,17 @@ class User
         if (empty($fullname)) {
             throw new \ErrorException('Имя не заполнено!', 450);
         }
-        $this->repository->addUser($login, $password, $fullname, $token);
+        if (empty($email)) {
+            throw new \ErrorException('Email не заполнен!', 450);
+        }
+        $user = $this->repository->getUser($login);
+        if ($user) {
+            throw new \ErrorException('Логин уже используется!', 450);
+        }
+        if (\Libot\Models\Recaptcha::validateRechapcha($recaptcha) !== true) {
+            throw new \ErrorException('Антиспам система не пройдена!', 403);
+        }
+        $this->repository->addUser($login, $password, $fullname, $email, $token);
     }
 
     public function getUser($login)

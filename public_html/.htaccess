@@ -3,7 +3,16 @@ AddDefaultCharset UTF-8
 RewriteEngine On
 RewriteBase /
 
-RewriteCond %{REQUEST_FILENAME} !-f
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin http://localhost:3000
+    Header set Access-Control-Allow-Credentials true
+    Header set Access-Control-Allow-Methods 'POST,GET,OPTIONS,DELETE'
+    Header set Access-Control-Allow-Headers *
+</IfModule>
+
 RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.php -f
+
+RewriteRule ^(.*)$ $1.php
 
 #ErrorDocument 505 http://front.ms/errors/err450.php

@@ -6,11 +6,19 @@ $config = \Libot\Config::getInstance();
 $tradeBotRepository = new \Libot\TradeBotRepository($config->PDO);
 $userUseCase = new \Libot\Models\User($tradeBotRepository);
 
-$login = filter_input(INPUT_POST, 'login', FILTER_SANITIZE_STRING);
-$password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
-$fullname = filter_input(INPUT_POST, 'fullname', FILTER_SANITIZE_STRING);
+$json = file_get_contents('php://input');
+if (empty($json)) {
+    echo json_encode(['status' => 403]);
+    exit;
+}
+$data = json_decode($json, 1);
+
+$login = $data['login'];
+$password = $data['password'];
+$fullname = $data['fullname'];
 
 try {
+    $userUseCase->checkAuthUser();
     $userUseCase->updateUser($login, $password, $fullname);
 } catch (\ErrorException $ex) {
     echo json_encode(['status' => $ex->getCode(), 'error' => $ex->getMessage()]);

@@ -1,4 +1,5 @@
 <?php
+
 header('Content-Type: application/json');
 require __DIR__ . '/../../vendor/autoload.php';
 
@@ -6,16 +7,19 @@ $config = \Libot\Config::getInstance();
 $tradeBotRepository = new \Libot\TradeBotRepository($config->PDO);
 $userUseCase = new \Libot\Models\User($tradeBotRepository);
 
-$login = filter_input(INPUT_POST, 'login', FILTER_SANITIZE_STRING);
-$password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
-$fullname = filter_input(INPUT_POST, 'fullname', FILTER_SANITIZE_STRING);
+$json = file_get_contents('php://input');
+if (empty($json)) {
+    echo json_encode(['status' => 403]);
+    exit;
+}
+$data = json_decode($json, 1);
 
 try {
-    $userUseCase->addUser($login, $password, $fullname);
+    $token = \Libot\User\Token::execute();
+    $userUseCase->addUser($data['login'], $data['password'], $data['fullname'], $token);
+    $user = $userUseCase->getUser($data['login']);
 } catch (\ErrorException $ex) {
     echo json_encode(['status' => $ex->getCode(), 'error' => $ex->getMessage()]);
     exit;
 }
-
-
-echo json_encode(['status' => 200]);
+echo json_encode(['status' => 200, 'user' => $user, 'token' => $token]);

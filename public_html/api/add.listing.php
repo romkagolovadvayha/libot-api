@@ -6,8 +6,14 @@ $config = \Libot\Config::getInstance();
 $tradeBotRepository = new \Libot\TradeBotRepository($config->PDO);
 $listingUseCase = new \Libot\Models\Listing($tradeBotRepository);
 
-$channel = filter_input(INPUT_POST, 'channel', FILTER_SANITIZE_STRING);
-$currency = filter_input(INPUT_POST, 'currency', FILTER_SANITIZE_STRING);
+$json = file_get_contents('php://input');
+if (empty($json)) {
+    echo json_encode(['status' => 403]);
+    exit;
+}
+$data = json_decode($json, 1);
+$channel = $data['channel'];
+$currency = $data['currency'];
 
 try {
     $listingUseCase->addListing($channel, $currency);

@@ -7,16 +7,25 @@ require __DIR__ . '/../../vendor/autoload.php';
 $config = \Libot\Config::getInstance();
 $tradeBotRepository = new \Libot\TradeBotRepository($config->PDO);
 $useCase = new \Libot\Models\Bot($tradeBotRepository);
+$userUseCase = new \Libot\Models\User($tradeBotRepository);
 
-$botId = filter_input(INPUT_POST, 'botId', FILTER_SANITIZE_STRING);
-$active = filter_input(INPUT_POST, 'active', FILTER_SANITIZE_STRING);
+$json = file_get_contents('php://input');
+if (empty($json)) {
+    echo json_encode(['status' => 403]);
+    exit;
+}
+$data = json_decode($json, 1);
+
+$botId = $data['botId'];
+$active = $data['active'];
 $params = [];
 
-if (!empty($_REQUEST['params'])) {
-    $params = $_REQUEST['params'];
+if (!empty($data['params'])) {
+    $params = $data['params'];
 }
 
 try {
+   $userUseCase->checkAuthUser();
    $useCase->updateBot($botId, $active, $params);
 } catch (\ErrorException $ex) {
     echo json_encode(['status' => $ex->getCode(), 'error' => $ex->getMessage()]);

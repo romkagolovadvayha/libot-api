@@ -14,7 +14,7 @@ class TradeBotRepository
         $this->PDO = $PDO;
     }
 
-    public function addUser($login, $password, $fullname)
+    public function addUser($login, $password, $fullname, $token)
     {
         $params = [
             ':login' => $login,
@@ -31,10 +31,12 @@ class TradeBotRepository
             throw new \ErrorException('Логин уже используется!', 450);
         }
         $stmt   = $this->PDO->prepare(
-            'INSERT users SET login=:login, password=:password, fullname=:fullname'
+            'INSERT users SET login=:login, password=:password, fullname=:fullname, token=:token, userAgent=:userAgent, ip=:ip'
         );
+        $userAgent = $_SERVER['HTTP_USER_AGENT'];
+        $ip = $_SERVER['REMOTE_ADDR'];
         $params = [
-            ':login' => $login, ':password' => md5($password), ':fullname' => $fullname,
+            ':login' => $login, ':password' => md5($password), ':fullname' => $fullname, ':token' => $token, ':userAgent' => $userAgent, ':ip' => $ip
         ];
         $result = $stmt->execute($params);
 
@@ -47,6 +49,27 @@ class TradeBotRepository
 
         try {
             $query = 'SELECT * FROM users WHERE login=:login';
+
+            $stmt = $this->PDO->prepare($query);
+            $stmt->execute($params);
+            $objects = [];
+            while ($object = $stmt->fetchObject()) {
+                $objects[] = $object;
+            }
+        } catch (\PDOException $e) {
+            echo "Failed to get DB handle: " . $e->getMessage() . "\n";
+            exit;
+        }
+
+        return !empty($objects) ? $objects[0] : null;
+    }
+
+    public function getUserByToken($token)
+    {
+        $params = [':token' => $token];
+
+        try {
+            $query = 'SELECT * FROM users WHERE token=:token';
 
             $stmt = $this->PDO->prepare($query);
             $stmt->execute($params);

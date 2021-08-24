@@ -6,10 +6,17 @@ $config = \Libot\Config::getInstance();
 $tradeBotRepository = new \Libot\TradeBotRepository($config->PDO);
 $transfersUseCase = new \Libot\Models\Transfer($tradeBotRepository);
 
-$botId = filter_input(INPUT_POST, 'botId', FILTER_SANITIZE_STRING);
-$currencyBuy = filter_input(INPUT_POST, 'currencyBuy', FILTER_SANITIZE_STRING);
-$sumBuy = filter_input(INPUT_POST, 'sumBuy', FILTER_SANITIZE_STRING);
-$currencySell = filter_input(INPUT_POST, 'currencySell', FILTER_SANITIZE_STRING);
+$json = file_get_contents('php://input');
+if (empty($json)) {
+    echo json_encode(['status' => 403]);
+    exit;
+}
+$data = json_decode($json, 1);
+
+$botId = $data['botId'];
+$currencyBuy = $data['currencyBuy'];
+$sumBuy = $data['sumBuy'];
+$currencySell = $data['currencySell'];
 
 try {
     $transfersUseCase->addTransfer($botId, $currencyBuy, $sumBuy, $currencySell);

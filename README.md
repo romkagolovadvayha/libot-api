@@ -1,6 +1,5 @@
 # Listing Bot Rest Api
-Cryptocurrency exchange trading bot
-____
+>Cryptocurrency exchange trading bot
 
 
 ## Add Bot
@@ -20,7 +19,6 @@ Status: 200 OK
 Connection: close
 Content-Type: application/json
 ```
-___
 
 
 ## Add Listing

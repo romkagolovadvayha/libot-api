@@ -61,7 +61,9 @@ class User
         if (\Libot\Models\Recaptcha::validateRechapcha($recaptcha) !== true) {
             throw new \ErrorException('Антиспам система не пройдена!', 403);
         }
-        $this->repository->updateUser($login, null, null, null, $token);
+        $userAgent = $_SERVER['HTTP_USER_AGENT'];
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $this->repository->updateUser($login, null, null, null, $token, $userAgent, $ip);
         return $user;
     }
 

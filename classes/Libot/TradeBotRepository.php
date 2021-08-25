@@ -92,7 +92,7 @@ class TradeBotRepository
         return !empty($objects) ? get_object_vars($objects[0]) : null;
     }
 
-    public function updateUser($login, $password = null, $fullname = null, $email = null, $token = null)
+    public function updateUser($login, $password = null, $fullname = null, $email = null, $token = null, $userAgent = null, $ip = null)
     {
         $params = [':login' => $login];
         $q      = [];
@@ -111,6 +111,14 @@ class TradeBotRepository
         if (!empty($token)) {
             $params[':token'] = $token;
             $q[]                 = "`token`=:token";
+        }
+        if (!empty($userAgent)) {
+            $params[':userAgent'] = $userAgent;
+            $q[]                 = "`userAgent`=:userAgent";
+        }
+        if (!empty($ip)) {
+            $params[':ip'] = $ip;
+            $q[]                 = "`ip`=:ip";
         }
         if (!empty($q)) {
             $stmt   = $this->PDO->prepare("UPDATE users SET ".implode(', ', $q)." WHERE `login` = :login");

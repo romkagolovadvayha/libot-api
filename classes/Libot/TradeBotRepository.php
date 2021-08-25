@@ -50,6 +50,27 @@ class TradeBotRepository
         return !empty($objects) ? get_object_vars($objects[0]) : null;
     }
 
+    public function getUserAuthorization($login, $password)
+    {
+        $params = [':login' => $login, ':password' => md5($password)];
+
+        try {
+            $query = 'SELECT * FROM users WHERE login=:login AND password=:password';
+
+            $stmt = $this->PDO->prepare($query);
+            $stmt->execute($params);
+            $objects = [];
+            while ($object = $stmt->fetchObject()) {
+                $objects[] = $object;
+            }
+        } catch (\PDOException $e) {
+            echo "Failed to get DB handle: " . $e->getMessage() . "\n";
+            exit;
+        }
+
+        return !empty($objects) ? get_object_vars($objects[0]) : null;
+    }
+
     public function getUserByToken($token)
     {
         $params = [':token' => $token];
@@ -71,7 +92,7 @@ class TradeBotRepository
         return !empty($objects) ? get_object_vars($objects[0]) : null;
     }
 
-    public function updateUser($login, $password = null, $fullname = null)
+    public function updateUser($login, $password = null, $fullname = null, $email = null, $token = null)
     {
         $params = [':login' => $login];
         $q      = [];
@@ -82,6 +103,14 @@ class TradeBotRepository
         if (!empty($fullname)) {
             $params[':fullname'] = $fullname;
             $q[]                 = "`fullname`=:fullname";
+        }
+        if (!empty($email)) {
+            $params[':email'] = $email;
+            $q[]                 = "`email`=:email";
+        }
+        if (!empty($token)) {
+            $params[':token'] = $token;
+            $q[]                 = "`token`=:token";
         }
         if (!empty($q)) {
             $stmt   = $this->PDO->prepare("UPDATE users SET ".implode(', ', $q)." WHERE `login` = :login");

@@ -46,6 +46,25 @@ class User
        return $this->repository->getUser($login);
     }
 
+    public function authorization($login, $password, $recaptcha, $token)
+    {
+        if (empty($login)) {
+            throw new \ErrorException('Введите логин!', 450);
+        }
+        if (empty($password)) {
+            throw new \ErrorException('Введите пароль!', 450);
+        }
+        $user = $this->repository->getUserAuthorization($login, $password);
+        if (empty($user)) {
+            throw new \ErrorException('Неверный логин или пароль!', 450);
+        }
+        if (\Libot\Models\Recaptcha::validateRechapcha($recaptcha) !== true) {
+            throw new \ErrorException('Антиспам система не пройдена!', 403);
+        }
+        $this->repository->updateUser($login, null, null, null, $token);
+        return $user;
+    }
+
     public function getUserByToken()
     {
         $headers = apache_request_headers();
@@ -56,12 +75,9 @@ class User
        return $this->repository->getUserByToken($token);
     }
 
-    public function updateUser($login, $password = null, $fullname = null)
+    public function updateUser($login, $password = null, $fullname = null, $email = null, $token = null)
     {
-        if (empty($login)) {
-            throw new \ErrorException('Введите логин!', 450);
-        }
-        $this->repository->updateUser($login, $password, $fullname);
+        $this->repository->updateUser($login, $password, $fullname, $email, $token);
     }
 
     public function checkAuthUser()

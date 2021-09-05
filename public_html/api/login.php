@@ -6,7 +6,7 @@ $config             = \Libot\Config::getInstance();
 $tradeBotRepository = new \Libot\TradeBotRepository($config->PDO);
 $userUseCase        = new \Libot\Models\User($tradeBotRepository);
 
-
+//sleep(1);
 $json = file_get_contents('php://input');
 if (empty($json)) {
     echo json_encode(['status' => 403, 'error' => 'Ошибка доступа!']);

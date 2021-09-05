@@ -52,7 +52,7 @@ class Bot
             foreach ($settingsResponse as $setting) {
                 $settings[$setting['name']] = $setting['value'];
             }
-            $bot['settings'] = $settings;
+            $bot['settings'] = (object) $settings;
             return $bot;
         }, $this->repository->getBots($userId));
         return $bots;

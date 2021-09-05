@@ -7,6 +7,7 @@ require __DIR__ . '/../../vendor/autoload.php';
 $config = \Libot\Config::getInstance();
 $tradeBotRepository = new \Libot\TradeBotRepository($config->PDO);
 $useCase = new \Libot\Models\Bot($tradeBotRepository);
+$userUseCase = new \Libot\Models\User($tradeBotRepository);
 
 $json = file_get_contents('php://input');
 if (empty($json)) {
@@ -15,12 +16,10 @@ if (empty($json)) {
 }
 $data = json_decode($json, 1);
 
-if (!empty($data['params'])) {
-    $params = $data['params'];
-}
-
 try {
-   $useCase->addBot($data['userId'], $params);
+   $userUseCase->checkAuthUser();
+   $user = $userUseCase->getUserByToken();
+   $useCase->addBot($user['id'], $data);
 } catch (\ErrorException $ex) {
     echo json_encode(['status' => $ex->getCode(), 'error' => $ex->getMessage()]);
     exit;

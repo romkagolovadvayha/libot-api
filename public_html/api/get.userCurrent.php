@@ -5,7 +5,7 @@ require __DIR__ . '/../../vendor/autoload.php';
 $config = \Libot\Config::getInstance();
 $tradeBotRepository = new \Libot\TradeBotRepository($config->PDO);
 $userUseCase = new \Libot\Models\User($tradeBotRepository);
-
+//sleep(1);
 $user = null;
 try {
     $userUseCase->checkAuthUser();

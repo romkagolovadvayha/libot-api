@@ -7,12 +7,11 @@ $tradeBotRepository = new \Libot\TradeBotRepository($config->PDO);
 $useCase = new \Libot\Models\Bot($tradeBotRepository);
 $userUseCase = new \Libot\Models\User($tradeBotRepository);
 
-$userId = filter_input(INPUT_GET, 'userId', FILTER_SANITIZE_STRING);
-
 $bots = [];
 try {
     $userUseCase->checkAuthUser();
-    $bots = $useCase->getBots($userId);
+    $user = $userUseCase->getUserByToken();
+    $bots = $useCase->getBots($user['id']);
 } catch (\ErrorException $ex) {
     echo json_encode(['status' => $ex->getCode(), 'error' => $ex->getMessage()]);
     exit;
